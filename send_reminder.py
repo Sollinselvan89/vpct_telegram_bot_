@@ -19,7 +19,8 @@ REMINDERS = {
     1: "🔔 Beginning of the month reminder: Time to review monthly goals!",
     5: "📝 5th day reminder: Weekly planning session today.",
     15: "📊 Mid-month reminder: Check progress on monthly tasks.",
-    28: "🎯 End-of-month approaching: Prepare for next month's goals."
+    25: "🎯 End-of-month approaching: Prepare for next month's goals.",
+    28: "📊 End-of-month approaching: Prepare for next month's goals."
 }
 
 def send_reminder():
@@ -30,21 +31,21 @@ def send_reminder():
         logger.info(f"No reminder scheduled for day {today}")
         return
     
-    message = REMINDERS[today]
-    logger.info(f"Sending reminder for day {today}: {message}")
+    reminder_message = REMINDERS[today]
+    logger.info(f"Sending reminder for day {today}: {reminder_message}")
     
-try:
-    bot = telegram.Bot(token=TOKEN)
-    logger.info(f"Bot initialized with name: {bot.get_me().first_name}")
-    logger.info(f"Attempting to send message to chat ID: {GROUP_CHAT_ID}")
-    bot.send_message(chat_id=GROUP_CHAT_ID, text=message)
-    logger.info("Reminder sent successfully")
-except Exception as e:
-    logger.error(f"Error sending reminder: {e}")
-    logger.error(f"Error type: {type(e).__name__}")
-    logger.error(f"Token length: {len(TOKEN) if TOKEN else 'Token is None'}")
-    logger.error(f"Group ID: {GROUP_CHAT_ID}")
-    raise
+    try:
+        bot = telegram.Bot(token=TOKEN)
+        logger.info(f"Bot initialized with name: {bot.get_me().first_name}")
+        logger.info(f"Attempting to send message to chat ID: {GROUP_CHAT_ID}")
+        bot.send_message(chat_id=GROUP_CHAT_ID, text=reminder_message)
+        logger.info("Reminder sent successfully")
+    except Exception as e:
+        logger.error(f"Error sending reminder: {e}")
+        logger.error(f"Error type: {type(e).__name__}")
+        logger.error(f"Token length: {len(TOKEN) if TOKEN else 'Token is None'}")
+        logger.error(f"Group ID: {GROUP_CHAT_ID}")
+        raise
 
 if __name__ == "__main__":
     logger.info("Starting Telegram Reminder Script")
