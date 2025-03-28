@@ -20,25 +20,26 @@ REMINDERS = {
     5: "📝 5th day reminder: Weekly planning session today.",
     15: "📊 Mid-month reminder: Check progress on monthly tasks.",
     25: "🎯 End-of-month approaching: Prepare for next month's goals.",
-    28: "📊 End-of-month approaching: Prepare for next month's goals."
+    28: "🧪 Test message: This confirms the bot is working correctly!"
 }
 
-def send_reminder():
-    """Check if today is a reminder day and send the appropriate message"""
-    today = datetime.now().day
-    
-    if today not in REMINDERS:
-        logger.info(f"No reminder scheduled for day {today}")
-        return
-    
-    reminder_message = REMINDERS[today]
-    logger.info(f"Sending reminder for day {today}: {reminder_message}")
+# Get today's date
+today = datetime.now().day
+logger.info(f"Today is day {today}")
+
+# Check if we have a reminder for today
+if today in REMINDERS:
+    reminder_text = REMINDERS[today]
+    logger.info(f"Found reminder for today: {reminder_text}")
     
     try:
+        # Initialize the bot
         bot = telegram.Bot(token=TOKEN)
         logger.info(f"Bot initialized with name: {bot.get_me().first_name}")
         logger.info(f"Attempting to send message to chat ID: {GROUP_CHAT_ID}")
-        bot.send_message(chat_id=GROUP_CHAT_ID, text=REMINDERS[today])
+        
+        # Send the message
+        bot.send_message(chat_id=GROUP_CHAT_ID, text=reminder_text)
         logger.info("Reminder sent successfully")
     except Exception as e:
         logger.error(f"Error sending reminder: {e}")
@@ -46,8 +47,7 @@ def send_reminder():
         logger.error(f"Token length: {len(TOKEN) if TOKEN else 'Token is None'}")
         logger.error(f"Group ID: {GROUP_CHAT_ID}")
         raise
+else:
+    logger.info(f"No reminder scheduled for day {today}")
 
-if __name__ == "__main__":
-    logger.info("Starting Telegram Reminder Script")
-    send_reminder()
-    logger.info("Script execution completed")
+logger.info("Script execution completed")
