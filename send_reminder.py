@@ -19,7 +19,7 @@ REMINDERS = {
     1: "🔔 Beginning of the month reminder: Time to review monthly goals!",
     5: "📝 5th day reminder: Weekly planning session today.",
     15: "📊 Mid-month reminder: Check progress on monthly tasks.",
-    25: "🎯 End-of-month approaching: Prepare for next month's goals."
+    28: "🎯 End-of-month approaching: Prepare for next month's goals."
 }
 
 def send_reminder():
