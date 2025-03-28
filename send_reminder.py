@@ -38,7 +38,7 @@ def send_reminder():
         bot = telegram.Bot(token=TOKEN)
         logger.info(f"Bot initialized with name: {bot.get_me().first_name}")
         logger.info(f"Attempting to send message to chat ID: {GROUP_CHAT_ID}")
-        bot.send_message(chat_id=GROUP_CHAT_ID, text=reminder_message)
+        bot.send_message(chat_id=GROUP_CHAT_ID, text=REMINDERS[today])
         logger.info("Reminder sent successfully")
     except Exception as e:
         logger.error(f"Error sending reminder: {e}")
