@@ -2,18 +2,15 @@ import os
 import logging
 from datetime import datetime
 import telegram
-
 # Configure logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
 logger = logging.getLogger(__name__)
-
 # Bot configuration from GitHub Secrets
 TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
 GROUP_CHAT_ID = os.environ.get('TELEGRAM_GROUP_CHAT_ID')
-
 # Configure your reminders here
 REMINDERS = {
     1: "🔔 Beginning of the month reminder: Time to review monthly goals!",
@@ -22,11 +19,9 @@ REMINDERS = {
     25: "🎯 End-of-month approaching: Prepare for next month's goals.",
     28: "🧪 Test message: This confirms the bot is working correctly!"
 }
-
 # Get today's date
 today = datetime.now().day
 logger.info(f"Today is day {today}")
-
 # Check if we have a reminder for today
 if today in REMINDERS:
     reminder_text = REMINDERS[today]
@@ -49,5 +44,4 @@ if today in REMINDERS:
         raise
 else:
     logger.info(f"No reminder scheduled for day {today}")
-
 logger.info("Script execution completed")
