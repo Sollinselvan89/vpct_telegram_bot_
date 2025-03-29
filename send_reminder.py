@@ -18,6 +18,7 @@ REMINDERS = {
     15: "📊 Mid-month reminder: Check progress on monthly tasks.",
     25: "🎯 End-of-month approaching: Prepare for next month's goals.",
     28: "🧪 @Sree Test message: This confirms the bot is working correctly!"
+    29: "🧪 @Sree Test message: This confirms the bot is working correctly!"
 }
 # Get today's date
 today = datetime.now().day
