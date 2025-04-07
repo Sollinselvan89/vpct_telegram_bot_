@@ -3,6 +3,9 @@ import logging
 import sqlite3
 import time
 import requests
+import http.server
+import socketserver
+from threading import Thread
 from datetime import datetime, timedelta
 from telegram.ext import Updater, CommandHandler
 import telegram
@@ -17,7 +20,7 @@ logger = logging.getLogger(__name__)
 # --- Environment Variables ---
 TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
 GROUP_CHAT_ID = os.environ.get('TELEGRAM_GROUP_CHAT_ID')
-SERVICE_URL = os.environ.get('SERVICE_URL', '')  # URL of the render service
+PORT = int(os.environ.get('PORT', 8080))  # Render assigns a PORT env var
 
 # --- Timezone ---
 IST = pytz.timezone('Asia/Kolkata')
@@ -349,21 +352,36 @@ def send_monthly_reminder(bot):
             logger.error(f"Failed to send monthly reminder: {str(e)}")
 
 
-# --- Self Ping Function ---
-def self_ping():
-    """Self-ping to keep the service alive"""
-    if SERVICE_URL:
-        try:
-            response = requests.get(SERVICE_URL)
-            logger.info(f"Self-ping: {response.status_code}")
-        except Exception as e:
-            logger.error(f"Self-ping failed: {str(e)}")
+# --- Simple HTTP Server for Render ---
+class SimpleHTTPHandler(http.server.SimpleHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+        self.wfile.write(b'Telegram Reminder Bot is running!')
+        
+    def log_message(self, format, *args):
+        # Suppress logging of HTTP requests
+        return
+
+
+def run_http_server():
+    """Run a simple HTTP server to satisfy Render's port binding requirement"""
+    handler = SimpleHTTPHandler
+    with socketserver.TCPServer(("", PORT), handler) as httpd:
+        logger.info(f"HTTP server running on port {PORT}")
+        httpd.serve_forever()
 
 
 # --- Main ---
 def main():
     """Main function to run the bot"""
     setup_db()
+    
+    # Start HTTP server in a separate thread for Render
+    server_thread = Thread(target=run_http_server)
+    server_thread.daemon = True
+    server_thread.start()
     
     # Initialize the bot
     updater = Updater(TOKEN)
@@ -384,15 +402,11 @@ def main():
     send_monthly_reminder(updater.bot)
     check_due_reminders(updater.bot)
     
-    # Main loop for checks and self-pinging
+    # Main loop for checks
     try:
         while True:
             time.sleep(60)  # Check every minute
             check_due_reminders(updater.bot)
-            
-            # Self-ping every 10 minutes to keep the service alive
-            if int(time.time()) % 600 < 60:  # Every 10 minutes (600 seconds)
-                self_ping()
                 
             # Check for monthly reminders once per day
             if datetime.now(IST).hour == 8 and datetime.now(IST).minute == 0:
